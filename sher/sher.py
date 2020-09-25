@@ -1,12 +1,12 @@
 import numpy as np
 import time
 import sys
-from utils.utils import no_of_electrons
-from utils.enuc import enuc_calculator
-from utils.basisfunctions1 import orbital_config
-from one_integrals.integral_utils import S_mat , T_mat ,V_mat
-from two_integrals.two_integrals_utils import Eri_mat
-from scf.scf import scf_iteration
+from Computational_Package_project.sher.utils.utils import no_of_electrons
+from Computational_Package_project.sher.utils.enuc import enuc_calculator
+from Computational_Package_project.sher.utils.basisfunctions1 import orbital_config
+from Computational_Package_project.sher.one_integrals.integral_utils import S_mat , T_mat ,V_mat
+from Computational_Package_project.sher.two_integrals.two_integrals_utils import Eri_mat
+from Computational_Package_project.sher.scf.scf import scf_iteration
 #from one_integrals.integral_utils import S
 
 inFile = sys.argv[1]

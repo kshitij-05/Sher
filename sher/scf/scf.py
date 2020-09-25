@@ -1,5 +1,5 @@
 import numpy as np
-from scf.scf_helper import make_density,make_fock,get_X,deltae,scf_energy,make_C,rmsd,round_up
+from sher.scf.scf_helper import make_density,make_fock,get_X,deltae,scf_energy,make_C,rmsd,round_up
 
 def scf_iteration(convergence,ENUC,Nelec,dim,S,Hcore,twoe,printops,do_DIIS):
 

@@ -58,8 +58,9 @@ S1*S2*S3*np.power(np.pi/(a+b),1.5)
 cdef double S(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1] anorm, double[::1] aorigin,\
 	double[::1] bexps, double[::1] bcoefs, int[::1] bshell ,double[::1] bnorm, double[::1] borigin):
 	
-	cdef int no_coeffs
-	no_coeffs = acoefs.shape[0]
+	cdef int noa_coeffs,nob_coeffs
+	noa_coeffs = acoefs.shape[0]
+	nob_coeffs = bcoefs.shape[0]
 	cdef double s =0.0
 	cdef int ia , ib
 	cdef double norm1,norm2,coef1,coef2,exp1,exp2,origina1,origina2,origina3,originb1,originb2,originb3
@@ -76,8 +77,8 @@ cdef double S(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1
 	shellb1=bshell[0] 
 	shellb2=bshell[1] 
 	shellb3=bshell[2]
-	for ia in range(no_coeffs):
-		for ib  in range(no_coeffs):
+	for ia in range(noa_coeffs):
+		for ib  in range(nob_coeffs):
 			norm1 =anorm[ia]
 			norm2 =bnorm[ib]
 			coef1 =acoefs[ia]
@@ -93,9 +94,15 @@ cdef double S(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1
 @cython.wraparound(False)
 
 
-def S_mat(double[:,::1] exps,double[:,::1] coefs,double[:,::1] origins,int[:,::1] shells,double[:,::1] norms):
-	nbasis = exps.shape[0]
+def S_mat(list exps,list coefs,double[:,::1] origins,int[:,::1] shells,list norms):
+	cdef int nbasis = len(exps)
 	smat = np.zeros((nbasis,nbasis),dtype = DTYPE)
+	cdef double[::1]exp1
+	cdef double[::1]exp2
+	cdef double[::1]coefs1
+	cdef double[::1]coefs2
+	cdef double[::1]norm1
+	cdef double[::1]norm2
 	cdef double[:,::1] smat_view = smat
 	cdef double s =0.0
 	cdef int i,j
@@ -104,7 +111,13 @@ def S_mat(double[:,::1] exps,double[:,::1] coefs,double[:,::1] origins,int[:,::1
 			if j==i:
 				s = 1.0
 			else:
-				s = S(exps[i,:],coefs[i,:],shells[i,:],norms[i,:],origins[i,:],exps[j,:],coefs[j,:],shells[j,:],norms[j,:],origins[j,:])
+				exp1 = exps[i]
+				exp2 = exps[j]
+				coefs1 = coefs[i]
+				coefs2 = coefs[j]
+				norm1= norms[i]
+				norm2 = norms[j]
+				s = S(exp1,coefs1,shells[i,:],norm1,origins[i,:],exp2,coefs2,shells[j,:],norm2,origins[j,:])
 			smat_view[i][j] = smat_view[j][i] = s
 
 	return smat
@@ -133,8 +146,9 @@ cdef double kinetic(double a,int l1,int m1,int n1,double A1,double A2,double A3,
 cdef double T(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1] anorm, double[::1] aorigin,\
 	double[::1] bexps, double[::1] bcoefs, int[::1] bshell ,double[::1] bnorm, double[::1] borigin):
 	
-	cdef int no_coeffs
-	no_coeffs = acoefs.shape[0]
+	cdef int noa_coeffs,nob_coeffs
+	noa_coeffs = acoefs.shape[0]
+	nob_coeffs = bcoefs.shape[0]
 	cdef double t =0.0
 	cdef int ia , ib
 	cdef double norm1,norm2,coef1,coef2,exp1,exp2,origina1,origina2,origina3,originb1,originb2,originb3
@@ -151,8 +165,8 @@ cdef double T(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1
 	shellb1=bshell[0] 
 	shellb2=bshell[1] 
 	shellb3=bshell[2]
-	for ia in range(no_coeffs):
-		for ib  in range(no_coeffs):
+	for ia in range(noa_coeffs):
+		for ib  in range(nob_coeffs):
 			norm1 =anorm[ia]
 			norm2 =bnorm[ib]
 			coef1 =acoefs[ia]
@@ -167,15 +181,27 @@ cdef double T(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1
 @cython.boundscheck(False)
 @cython.wraparound(False)
 
-def T_mat(double[:,::1] exps,double[:,::1] coefs,double[:,::1] origins,int[:,::1] shells,double[:,::1] norms):
-	nbasis = exps.shape[0]
+def T_mat(list exps,list coefs,double[:,::1] origins,int[:,::1] shells,list norms):
+	cdef int nbasis = len(exps)
 	tmat = np.zeros((nbasis,nbasis),dtype = DTYPE)
 	cdef double[:,::1] tmat_view = tmat
 	cdef double s =0.0
+	cdef double[::1]exp1
+	cdef double[::1]exp2
+	cdef double[::1]coefs1
+	cdef double[::1]coefs2
+	cdef double[::1]norm1
+	cdef double[::1]norm2
 	cdef int i,j
 	for i in range(nbasis):
 		for j in range(0 , i+1):
-			s = T(exps[i,:],coefs[i,:],shells[i,:],norms[i,:],origins[i,:],exps[j,:],coefs[j,:],shells[j,:],norms[j,:],origins[j,:])
+			exp1 = exps[i]
+			exp2 = exps[j]
+			coefs1 = coefs[i]
+			coefs2 = coefs[j]
+			norm1= norms[i]
+			norm2 = norms[j]
+			s = T(exp1,coefs1,shells[i,:],norm1,origins[i,:],exp2,coefs2,shells[j,:],norm2,origins[j,:])
 			tmat_view[i][j] = tmat_view[j][i] = s
 
 	return tmat
@@ -260,13 +286,13 @@ cdef double largeboys(int n,double T):
 @cython.cdivision(True)
 
 cdef double boys(int n,double T):
+	
+
 	return hyp1f1(n+0.5,n+1.5,-T)/(2.0*n+1.0)
-	'''if T<14.60853:
-		return smallboys(n,T)
-	elif T>=14.60853 and n==0:
-		return (3.141592653589793**0.5)*(T**(-0.5))*0.5	
+	'''if T<24.000:
 	else:
 		return largeboys(n,T)'''
+
 
 
 cdef double R(int t,int u,int v,int n,double p,double PCx,double PCy,double PCz,double RPC):
@@ -331,9 +357,9 @@ cdef double nuclear_attraction(double a,int l1,int m1,int n1,double A1,double A2
 
 cdef double V(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1] anorm, double[::1] aorigin,\
 	double[::1] bexps, double[::1] bcoefs, int[::1] bshell ,double[::1] bnorm, double[::1] borigin,double[::1] C):
-	
-	cdef int no_coeffs
-	no_coeffs = acoefs.shape[0]
+	cdef int noa_coeffs,nob_coeffs
+	noa_coeffs = acoefs.shape[0]
+	nob_coeffs = bcoefs.shape[0]
 	cdef double v =0.0
 	cdef int ia , ib
 	cdef double norm1,norm2,coef1,coef2,exp1,exp2,origina1,origina2,origina3,originb1,originb2,originb3,C1,C2,C3
@@ -353,8 +379,8 @@ cdef double V(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1
 	C1= C[0]
 	C2= C[1]
 	C3= C[2]
-	for ia in range(no_coeffs):
-		for ib  in range(no_coeffs):
+	for ia in range(noa_coeffs):
+		for ib  in range(nob_coeffs):
 			norm1 =anorm[ia]
 			norm2 =bnorm[ib]
 			coef1 =acoefs[ia]
@@ -369,10 +395,15 @@ cdef double V(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[::1
 @cython.boundscheck(False)
 @cython.wraparound(False)
 
-def V_mat(double[:,::1] exps,double[:,::1] coefs,double[:,::1] origins,int[:,::1] shells,double[:,::1] norms,\
-	double[::1] atomic_nos,double[:,::1] geom):
-	nbasis = exps.shape[0]
+def V_mat(list exps,list coefs,double[:,::1] origins,int[:,::1] shells,list norms,double[::1] atomic_nos,double[:,::1] geom):
+	cdef int nbasis = len(exps)
 	no_of_atoms = atomic_nos.shape[0]
+	cdef double[::1]exp1
+	cdef double[::1]exp2
+	cdef double[::1]coefs1
+	cdef double[::1]coefs2
+	cdef double[::1]norm1
+	cdef double[::1]norm2
 
 	cdef int i,j,k
 	P1 = np.zeros((nbasis,nbasis),dtype=DTYPE)
@@ -381,8 +412,13 @@ def V_mat(double[:,::1] exps,double[:,::1] coefs,double[:,::1] origins,int[:,::1
 	for i in range(0,nbasis):
 		for j in range(0,nbasis):
 			for k in range(0,no_of_atoms):
-				v += V(exps[i,:],coefs[i,:],shells[i,:],norms[i,:],origins[i,:],\
-					exps[j,:],coefs[j,:],shells[j,:],norms[j,:],origins[j,:],geom[k])*atomic_nos[k]
+				exp1 = exps[i]
+				exp2 = exps[j]
+				coefs1 = coefs[i]
+				coefs2 = coefs[j]
+				norm1= norms[i]
+				norm2 = norms[j]
+				v += V(exp1,coefs1,shells[i,:],norm1,origins[i,:],exp2,coefs2,shells[j,:],norm2,origins[j,:],geom[k])*atomic_nos[k]
 			P1_view[i,j] = -v
 
 	P2 = np.zeros((nbasis, nbasis),dtype=DTYPE)

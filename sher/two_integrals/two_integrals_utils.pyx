@@ -59,6 +59,7 @@ cdef Ulong fact(int k1 ,int k2):
 		y*=(i+1)
 	return y
 
+'''
 @cython.cdivision(True)
 
 cdef double smallboys(int n,double T):
@@ -87,7 +88,7 @@ cdef double smallboys(int n,double T):
 		else:
 			s+=((x**(k-50))/fact(49,k)/(2*n+2*k+1))*x10/f10*x10/f20*x10/f30*x10/f40*x10/f50
 
-	return s
+	return s'''
 '''
 @cython.cdivision(True)
 
@@ -114,13 +115,13 @@ cdef double largeboys(int n,double T):
 @cython.cdivision(True)
 
 cdef double boys(int n,double T):
+	
+
 	return hyp1f1(n+0.5,n+1.5,-T)/(2.0*n+1.0)
-	'''if T<14.60853:
-		return smallboys(n,T)
-	elif T>=14.60853 and n==0:
-		return (3.141592653589793**0.5)*(T**(-0.5))*0.5	
+	'''if T<24.000:
 	else:
 		return largeboys(n,T)'''
+
 
 
 cdef double R(int t,int u,int v,int n,double p,double PCx,double PCy,double PCz,double RPC):
@@ -394,7 +395,11 @@ cdef double ERI(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[:
 	double[::1] bexps, double[::1] bcoefs, int[::1] bshell ,double[::1] bnorm, double[::1] borigin,\
 	double[::1] cexps, double[::1] ccoefs, int[::1] cshell ,double[::1] cnorm, double[::1] corigin,\
 	double[::1] dexps, double[::1] dcoefs, int[::1] dshell ,double[::1] dnorm, double[::1] dorigin):
-		cdef int no_coeffs = acoefs.shape[0]
+		cdef int noa_coeffs,nob_coeffs,noc_coeffs,nod_coeffs
+		noa_coeffs = acoefs.shape[0]
+		nob_coeffs = bcoefs.shape[0]
+		noc_coeffs = ccoefs.shape[0]
+		nod_coeffs = dcoefs.shape[0]
 		cdef double norm1,norm2,norm3,norm4
 		cdef double coef1,coef2,coef3,coef4
 		cdef double exp1,exp2,exp3,exp4
@@ -411,13 +416,13 @@ cdef double ERI(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[:
 		originc1,originc2,originc3 = corigin[0],corigin[1],corigin[2]
 		origind1,origind2,origind3 = dorigin[0],dorigin[1],dorigin[2]
 
-		for ja in range(no_coeffs):
+		for ja in range(noa_coeffs):
 			norm1,coef1,exp1 = anorm[ja],acoefs[ja],aexps[ja]
-			for jb in range(no_coeffs):
+			for jb in range(nob_coeffs):
 				norm2,coef2,exp2 = bnorm[jb],bcoefs[jb],bexps[jb]
-				for jc in range(no_coeffs):
+				for jc in range(noc_coeffs):
 					norm3,coef3,exp3 = cnorm[jc],ccoefs[jc],cexps[jc]
-					for jd in range(no_coeffs):
+					for jd in range(nod_coeffs):
 						norm4,coef4,exp4 = dnorm[jd],dcoefs[jd],dexps[jd]
 
 						eri += norm1*norm2*norm3*norm4*coef1*coef2*coef3*coef4*\
@@ -432,26 +437,49 @@ cdef double ERI(double[::1] aexps, double[::1] acoefs, int[::1] ashell ,double[:
 @cython.wraparound(False)
 @cython.cdivision(True)
 
-def Eri_mat(double[:,::1] exps,double[:,::1] coefs,double[:,::1] origins,int[:,::1] shells,double[:,::1] norms):
+def Eri_mat(list exps,list coefs,double[:,::1] origins,int[:,::1] shells,list norms):
 	cdef list unique
 	cdef int nbasis
-	nbasis = exps.shape[0]
+	nbasis = len(exps)
 	unique = uniqueindex(nbasis)
 	length = len(unique)
 	Temp_mat = np.zeros((length),dtype = DTYPE)
 	cdef double[::1] Temp_mat_view = Temp_mat
 	cdef int a,b,c,d,i
-
+	cdef double[::1]exp1
+	cdef double[::1]exp2
+	cdef double[::1]exp3
+	cdef double[::1]exp4
+	cdef double[::1]coefs1
+	cdef double[::1]coefs2
+	cdef double[::1]coefs3
+	cdef double[::1]coefs4
+	cdef double[::1]norm1
+	cdef double[::1]norm2
+	cdef double[::1]norm3
+	cdef double[::1]norm4
 
 	for i in range(length):
 		a = unique[i][0]
 		b = unique[i][1]
 		c = unique[i][2]
 		d = unique[i][3]
-		Temp_mat_view[i]=ERI(exps[a,:],coefs[a,:],shells[a,:],norms[a,:],origins[a,:],\
-			exps[b,:],coefs[b,:],shells[b,:],norms[b,:],origins[b,:],\
-			exps[c,:],coefs[c,:],shells[c,:],norms[c,:],origins[c,:],\
-			exps[d,:],coefs[d,:],shells[d,:],norms[d,:],origins[d,:])
+		exp1 = exps[a]
+		exp2 = exps[b]
+		exp3 = exps[c]
+		exp4 = exps[d]
+		coefs1 = coefs[a]
+		coefs2 = coefs[b]
+		coefs3 = coefs[c]
+		coefs4 = coefs[d]
+		norm1= norms[a]
+		norm2 = norms[b]
+		norm3= norms[c]
+		norm4 = norms[d]
+		Temp_mat_view[i]=ERI(exp1,coefs1,shells[a,:],norm1,origins[a,:],\
+			exp2,coefs2,shells[b,:],norm2,origins[b,:],\
+			exp3,coefs3,shells[c,:],norm3,origins[c,:],\
+			exp4,coefs4,shells[d,:],norm4,origins[d,:])
 	
 	Twoe_mat = np.zeros((nbasis,nbasis,nbasis,nbasis),dtype = DTYPE)
 	cdef double[:,:,:,::1] Twoe_mat_view = Twoe_mat

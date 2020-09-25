@@ -122,6 +122,66 @@ def Basis_attributes_finder(atom):
 
 	return attributes
 
+def Basis_attributes_finder_DZP(atom):
+	basis_set_DZP = {
+	'H' :  [[[19.2406,2.89920,0.65340],[0.032828,0.231208,0.817238],[0,0,0]],
+			[[0.17760],[1.000000],[0,0,0]],
+			[[1.000000],[1.000000],[1,0,0]],
+			[[1.000000],[1.000000],[0,1,0]],
+			[[1.000000],[1.000000],[0,0,1]]],
+	'O' :  [[[7816.54,1175.82,273.188,81.1696,27.1836,3.41360],[0.002031,0.015436,0.073771,0.247606,0.611832,0.241205],[0,0,0]],
+			[[9.5322],[1.000000],[0,0,0]],
+			[[0.9398],[1.000000],[0,0,0]],
+			[[0.2846],[1.000000],[0,0,0]],
+			[[35.1832,7.9040,2.3051,0.7171],[0.019580,0.124189,0.394727,0.627375],[1,0,0]],
+			[[35.1832,7.9040,2.3051,0.7171],[0.019580,0.124189,0.394727,0.627375],[0,1,0]],
+			[[35.1832,7.9040,2.3051,0.7171],[0.019580,0.124189,0.394727,0.627375],[0,0,1]],
+			[[0.2137],[1.000000],[1,0,0]],
+			[[0.2137],[1.000000],[0,1,0]],
+			[[0.2137],[1.000000],[0,0,1]],
+			[[0.850000],[1.000000],[0,1,1]],
+			[[0.850000],[1.000000],[1,0,1]],
+			[[0.850000],[1.000000],[1,1,0]],
+			[[0.850000],[1.000000],[2,0,0]],
+			[[0.850000],[1.000000],[0,2,0]],
+			[[0.850000],[1.000000],[0,0,2]]]}
+
+	attributes = []
+	for i in range(len(basis_set_DZP[atom])):
+			attributes.append(basis_set_DZP[atom][i])
+
+	return attributes
+
+
+
+
+def Basis_attributes_finder_cc_pVDZ(atom):
+	basis_set_VDZ = {
+	'H' :[[[1.301000E+01,1.962000E+00,4.446000E-01,1.220000E-01],[1.968500E-02,1.379770E-01,4.781480E-01,5.012400E-01],[0,0,0]],
+		  [[1.220000E-01],[1.0],[0,0,0]],
+		  [[7.270000E-01],[1.0],[1,0,0]],
+		  [[7.270000E-01],[1.0],[0,1,0]],
+		  [[7.270000E-01],[1.0],[0,0,1]]],
+	'O' :[[[1.172000E+04,1.759000E+03,4.008000E+02,1.137000E+02,3.703000E+01,1.327000E+01,5.025000E+00,1.013000E+00,3.023000E-01],[7.100000E-04,5.470000E-03,2.783700E-02,1.048000E-01, 2.830620E-01,4.487190E-01,2.709520E-01,1.545800E-02,-2.585000E-03],[0,0,0]],
+		  [[1.172000E+04,1.759000E+03,4.008000E+02,1.137000E+02,3.703000E+01,1.327000E+01,5.025000E+00,1.013000E+00,3.023000E-01],[-1.600000E-04,-1.263000E-03,-6.267000E-03,-2.571600E-02,-7.092400E-02,-1.654110E-01,-1.169550E-01,5.573680E-01,5.727590E-01],[0,0,0]],
+		  [[3.023000E-01],[1.0],[0,0,0]],
+		  [[1.770000E+01, 3.854000E+00,1.046000E+00,2.753000E-01],[4.301800E-02,2.289130E-01,5.087280E-01,4.605310E-01],[1,0,0]],
+		  [[1.770000E+01, 3.854000E+00,1.046000E+00,2.753000E-01],[4.301800E-02,2.289130E-01,5.087280E-01,4.605310E-01],[0,1,0]],
+		  [[1.770000E+01, 3.854000E+00,1.046000E+00,2.753000E-01],[4.301800E-02,2.289130E-01,5.087280E-01,4.605310E-01],[0,0,1]],
+		  [[2.753000E-01],[1.0],[1,0,0]],
+		  [[2.753000E-01],[1.0],[0,1,0]],
+		  [[2.753000E-01],[1.0],[0,0,1]],
+		  [[1.185000E+00],[1.0],[0,1,1]],
+		  [[1.185000E+00],[1.0],[1,0,1]],
+		  [[1.185000E+00],[1.0],[1,1,0]],
+		  [[1.185000E+00],[1.0],[2,0,0]],
+		  [[1.185000E+00],[1.0],[0,2,0]]]}
+	attributes = []                         
+	for i in range(len(basis_set_VDZ[atom])):
+			attributes.append(basis_set_VDZ[atom][i])
+
+	return attributes
+
 class BasisFunction(object):
 
 	def __init__(self,origin=[ 0.0 ,0.0 ,0.0 ],shell=[0,0,0],exps=[],coefs=[]):
@@ -161,10 +221,15 @@ def fact2(n):
      return n*fact2(n-2)
 
 
-def orbital_config(atoms , geom):
+def orbital_config(atoms , geom,basis_set):
 		attributes = []
 		for i in range(len(atoms)):
-			temp_attri = Basis_attributes_finder(atoms[i])
+			if basis_set=='sto3g':
+				temp_attri = Basis_attributes_finder(atoms[i])
+			elif basis_set=='dzp':
+				temp_attri = Basis_attributes_finder_DZP(atoms[i])
+			elif basis_set == 'cc-pvdz':
+				temp_attri = Basis_attributes_finder_cc_pVDZ(atoms[i])
 
 			for j in range(len(temp_attri)):
 				temp_attri[j] += [geom[i]]
@@ -185,10 +250,13 @@ def sort_attri(orbital_objects):
 	shells = []
 	norms = []
 	for i in range(len(orbital_objects)):
-		exps_.append(orbital_objects[i].exps)
-		coefs_.append(orbital_objects[i].coefs)
+		E=np.array(orbital_objects[i].exps,dtype=np.double)
+		C=np.array(orbital_objects[i].coefs,dtype=np.double)
+		N=np.array(orbital_objects[i].norm,dtype=np.double)
+		exps_.append(E)
+		coefs_.append(C)
 		origins.append(orbital_objects[i].origin)
 		shells.append(orbital_objects[i].shell)
-		norms.append(orbital_objects[i].norm)
+		norms.append(N)
 
-	return np.array(exps_,dtype=np.double) , np.array(coefs_,dtype=np.double) ,np.array(origins,dtype=np.double) ,np.array(shells,dtype=np.intc) ,np.array(norms,dtype=np.double) 
+	return exps_ , coefs_ ,np.array(origins,dtype=np.double) ,np.array(shells,dtype=np.intc) ,norms
