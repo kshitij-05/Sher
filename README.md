@@ -3,7 +3,7 @@
 This is a program that computes one and two electron integrals over gaussian functions. 
 It can also perform Hartree fock and MP2 energy calculation
 
-Currently only STO3G, 631G, 312G, 6311G and cc-pVDZ basis sets are implemented  😬
+Currently only STO3G, 631G, 312G, 6311G and cc-pVDZ basis sets are implemented  ## 😬
 
 ## Installation 💻
 
