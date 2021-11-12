@@ -11,7 +11,7 @@ Step 2. Compile Cython files,
 Step 3. Run test.
           To run a test job run $ python3 sher.py h2o.inp in terminal
 
-Example input file
+### Example input file
 
 h2o.inp\
 hf cc-pvdz\
@@ -20,7 +20,7 @@ O      0.000000000000  -0.143225816552   0.000000000000\
 H      1.638036840407   1.136548822547  -0.000000000000\
 H      -1.638036840407   1.136548822547  -0.00000000000
 
-Example output
+### Example output
 
 0.000378600002 seconds taken for overlap integrals calculation\
 0.000315600002 seconds taken for kinetic integrals calculation\
