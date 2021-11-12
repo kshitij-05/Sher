@@ -10,10 +10,10 @@ Currently only STO3G, 631G, 312G, 6311G and cc-pVDZ basis sets are implemented
 
 Step 1. Download Sher :  $ git clone https://github.com/kshitij-05/Sher.git  \
 Step 2. Compile Cython files,  \
-          To compile go to directories one,two_integrals,utils and scf and run $ python3 setup.py build_ext --inplace\
+          & To compile go to directories one,two_integrals,utils and scf and run $ python3 setup.py build_ext --inplace\
 Step 3. Run test.\
-          Go to test directory\
-          To run a test job run $ python3 ../sher/sher.py h2o.inp in terminal  \
+          & Go to test directory\
+          & To run a test job run $ python3 ../sher/sher.py h2o.inp in terminal 
 
 ### Example input file  
 
