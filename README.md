@@ -5,11 +5,11 @@ It can also perform Hartree fock and MP2 energy calculation
 
 ## Installation
 
-Step 1. Download Sher :  $ git clone https://github.com/kshitij-05/Sher.git\
-Step 2. Compile Cython files,\
+Step 1. Download Sher :  $ git clone https://github.com/kshitij-05/Sher.git  \
+Step 2. Compile Cython files,  \
           To compile go to directories one,two_integrals,utils and scf and run $ python3 setup.py build_ext --inplace\
 Step 3. Run test.\
-          To run a test job run $ python3 sher.py h2o.inp in terminal\
+          To run a test job run $ python3 sher.py h2o.inp in terminal  \
 
 ### Example input file
 
